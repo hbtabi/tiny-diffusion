@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install CPU-only PyTorch (small wheel, no CUDA)
+        run: pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: pip install -e ".[dev]"
+      - run: ruff check .
+      - run: pytest -q
+      - name: Sample from a bundled checkpoint and render the denoising GIF
+        run: tiny-diffusion sample --ckpt text --n 1000 --gif /tmp/text.gif --png /tmp/text.png
+      - name: Quick training smoke run
+        run: tiny-diffusion train --dataset moons --steps 300 --out /tmp/moons.pt && tiny-diffusion eval --ckpt /tmp/moons.pt --n 500
