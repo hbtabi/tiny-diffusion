@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tiny-diffusion"
+version = "0.1.0"
+description = "A small, readable denoising diffusion model (DDPM + DDIM) from scratch in PyTorch, trained on 2D toy datasets on CPU."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Mohammed Hassan bin Tayyeb", email = "hasaantayyb1@gmail.com" }]
+requires-python = ">=3.10"
+dependencies = ["torch>=2.1", "numpy>=1.24", "matplotlib>=3.7", "pillow>=10"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "ruff>=0.4"]
+
+[project.scripts]
+tiny-diffusion = "tinydiffusion.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["tinydiffusion*"]
+
+[tool.ruff]
+line-length = 150
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
